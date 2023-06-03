@@ -1,0 +1,21 @@
+name: nerf
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.7
+  - numpy
+  - matplotlib
+  - pillow
+  - pip=22.2.2
+  - python=3.10.9
+  - pytorch
+  - torchvision
+  - pip:
+    - jupyter
+    - matplotlib
+    - pydantic
+    - pytorch_lightning
+    - tqdm
