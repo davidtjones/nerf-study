@@ -223,7 +223,7 @@ class OriginalNeRF(pl.LightningModule):
         self.log('train/mse-loss', loss.item(), 
                  prog_bar=True, on_step=True)
         
-        self.log('train/PNSR', pnsr, on_epoch=True)
+        self.log('train/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,
@@ -245,9 +245,9 @@ class OriginalNeRF(pl.LightningModule):
         pnsr = -10 * torch.log10(loss).item()
 
         self.log('val/mse-loss', loss.item(), 
-                 prog_bar=True, on_epoch=True)
+                 prog_bar=True, on_epoch=True, sync_dist=True)
         
-        self.log('val/PNSR', pnsr, on_epoch=True)
+        self.log('val/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,
@@ -268,9 +268,9 @@ class OriginalNeRF(pl.LightningModule):
         pnsr = -10 * torch.log10(loss).item()
 
         self.log('test/mse-loss', loss.item(), 
-                 prog_bar=False, on_epoch=True)
+                 prog_bar=False, on_epoch=True, sync_dist=True)
         
-        self.log('test/PNSR', pnsr, on_epoch=True)
+        self.log('test/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,

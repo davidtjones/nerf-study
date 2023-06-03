@@ -28,8 +28,9 @@ trainer = Trainer(
     logger=logger,
     max_epochs=1000,
     callbacks=callbacks,
-    default_root_dir="logging"
-    devices=1
+    default_root_dir="logging",
+    devices=8,
+    strategy='ddp_find_unused_parameters_true'
 )
 
 trainer.fit(model, dm)
