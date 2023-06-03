@@ -29,6 +29,7 @@ trainer = Trainer(
     max_epochs=1000,
     callbacks=callbacks,
     default_root_dir="logging"
+    devices=1
 )
 
 trainer.fit(model, dm)

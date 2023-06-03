@@ -1,15 +1,16 @@
 # NeRF Study
 ---
-A brief re-implementation of several nerf papers.
+Brief but readable implementations to start exploring 3D representation learning techniques in the vein of NeRF. 
 
 ## Current implementations:
-* NeRF (in progress)
+* NeRF
+* Mip-NeRF (in progress)
 
+## Sources
+### Papers
+1. [NeRF](https://arxiv.org/abs/2003.08934)
+2. [Mip-NeRF](https://arxiv.org/abs/2103.13415)
 
-## Reading list 
-1. [NeRF](https://www.matthewtancik.com/nerf)
-
-
-# Datasets
+### Datasets
 * NeRF: [dataset](https://drive.google.com/drive/folders/128yBriW1IG_3NJ5Rp7APSTZsJqdJdfc1)
 
