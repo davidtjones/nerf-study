@@ -12,7 +12,7 @@ from util.data import NeRFDataModule
 
 data_path = "../data/nerf_synthetic/lego"
 
-dm = NeRFDataModule(data_path, Resize(100, antialias=False))
+dm = NeRFDataModule(data_path)
 
 model = OriginalNeRF()
 
@@ -20,7 +20,7 @@ logger = WandbLogger(project="nerf-study", entity="djones", save_dir="logging")
 
 callbacks = [
     LogRenderedRGB(50, {"val"}),
-    ModelCheckpoint(dirpath="logging", monitor='val/mse_loss')
+    ModelCheckpoint(dirpath="logging", monitor='val/mse-loss')
 ]
 
 trainer = Trainer(
