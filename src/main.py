@@ -12,9 +12,11 @@ from util.data import NeRFDataModule
 
 data_path = "../data/nerf_synthetic/lego"
 devices = 1
+batch_size = 1
 
 dm = NeRFDataModule(
-    data_path, 
+    data_path,
+    batch_size,
     Resize(100, antialias=False)
 )
 
@@ -33,7 +35,7 @@ trainer = Trainer(
     max_epochs=1000,
     callbacks=callbacks,
     default_root_dir="logging",
-    devices=1,
+    devices=devices,
     strategy='ddp_find_unused_parameters_true' if devices > 1 else "auto"
 )
 

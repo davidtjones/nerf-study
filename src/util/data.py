@@ -203,9 +203,10 @@ class NeRFDataset(Dataset):
     
 
 class NeRFDataModule(LightningDataModule):
-    def __init__(self, data_path, transforms=None) -> None:
+    def __init__(self, data_path, batch_size, transforms=None) -> None:
         super().__init__()
         self.data_path = data_path
+        self.batch_size = batch_size
         self.transforms = transforms
 
     def prepare_data(self) -> None:
@@ -238,21 +239,21 @@ class NeRFDataModule(LightningDataModule):
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
             self.train_dataset, 
-            batch_size=1, 
+            batch_size=self.batch_size, 
             num_workers=8, 
             shuffle=False)
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.val_dataset, 
-            batch_size=1, 
+            batch_size=self.batch_size, 
             num_workers=8, 
             shuffle=False)
     
     def test_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.test_dataset, 
-            batch_size=1, 
+            batch_size=self.batch_size, 
             num_workers=8, 
             shuffle=False)
 
