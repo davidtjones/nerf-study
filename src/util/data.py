@@ -224,7 +224,7 @@ class NeRFDataModule(LightningDataModule):
                 self.data_path,
                 mode="val",
                 transform=self.transforms,
-                chunk_size=100
+                chunk_size=50
             )
 
         if stage == "test":
@@ -232,7 +232,7 @@ class NeRFDataModule(LightningDataModule):
                 self.data_path,
                 mode="test",
                 transform=self.transforms,
-                chunk_size=100
+                chunk_size=50
             )
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
