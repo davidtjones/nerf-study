@@ -72,9 +72,6 @@ class OriginalNeRF(pl.LightningModule):
             "disable": not kwargs.get("progress_bars_enabled", False), 
             "position": x}
 
-        # Chunking
-        self.pts_chunk_size = kwargs.get("pts_chunk_size", 1000)
-
         # Sampling
         # TODO: fix naming discrepancy: 
         self.stratified_sampling_sample_size = kwargs.get("n_stratified_sampling_size", 128)
