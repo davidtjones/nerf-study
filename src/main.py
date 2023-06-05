@@ -19,8 +19,18 @@ dm = NeRFDataModule(
     batch_size,
     Resize(100, antialias=False)
 )
+batch_size = 1  # needed
+ray_chunk_size = 50
 
-model = OriginalNeRF()
+
+dm = NeRFDataModule(
+    data_path,
+    batch_size,
+    ray_chunk_size,
+    Resize(100, antialias=False)
+)
+
+model = OriginalNeRF({"pts_chunk_size": 100})
 
 logger = WandbLogger(project="nerf-study", entity="djones", save_dir="logging")
 
@@ -32,7 +42,7 @@ callbacks = [
 trainer = Trainer(
     accelerator='gpu',
     logger=logger,
-    max_epochs=1000,
+    max_epochs=65,
     callbacks=callbacks,
     default_root_dir="logging",
     devices=devices,

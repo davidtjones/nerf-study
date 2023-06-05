@@ -2,9 +2,11 @@
 ---
 Brief but readable implementations to start exploring 3D representation learning techniques in the vein of NeRF. 
 
+This is a work in progress.
+
 ## Current implementations:
-* NeRF
-* Mip-NeRF (in progress)
+* NeRF (in-progress)
+* Mip-NeRF (slated)
 
 ## Sources
 ### Papers
