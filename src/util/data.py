@@ -68,7 +68,6 @@ def get_rays(
 
     return rays_o, rays_d
 
-
 class Empty:
     def __call__(self, x):
         return x
@@ -90,8 +89,6 @@ class SimpleImageCache:
             self.cache.clear()
             self.cache[key] = self.frames[key].image
         return self.cache[key]
-
-
 
 class NeRFDataset(Dataset):
     """
@@ -203,9 +200,11 @@ class NeRFDataset(Dataset):
     
 
 class NeRFDataModule(LightningDataModule):
-    def __init__(self, data_path, transforms=None) -> None:
+    def __init__(self, data_path, batch_size, ray_chunk_size, transforms=None) -> None:
         super().__init__()
         self.data_path = data_path
+        self.batch_size = batch_size
+        self.ray_chunk_size = ray_chunk_size
         self.transforms = transforms
 
     def prepare_data(self) -> None:
@@ -217,14 +216,14 @@ class NeRFDataModule(LightningDataModule):
                 self.data_path, 
                 mode="train", 
                 transform=self.transforms,
-                chunk_size=50
+                chunk_size=self.ray_chunk_size
             )
             
             self.val_dataset = NeRFDataset(
                 self.data_path,
                 mode="val",
                 transform=self.transforms,
-                chunk_size=None
+                chunk_size=self.ray_chunk_size
             )
 
         if stage == "test":
@@ -232,28 +231,28 @@ class NeRFDataModule(LightningDataModule):
                 self.data_path,
                 mode="test",
                 transform=self.transforms,
-                chunk_size=50
+                chunk_size=self.ray_chunk_size
             )
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
             self.train_dataset, 
-            batch_size=1, 
-            num_workers=0, 
-            shuffle=True)
+            batch_size=self.batch_size, 
+            num_workers=8, 
+            shuffle=False)
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.val_dataset, 
-            batch_size=1, 
-            num_workers=0, 
+            batch_size=self.batch_size, 
+            num_workers=8, 
             shuffle=False)
     
     def test_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.test_dataset, 
-            batch_size=1, 
-            num_workers=0, 
+            batch_size=self.batch_size, 
+            num_workers=8, 
             shuffle=False)
 
 

@@ -99,7 +99,6 @@ class OriginalNeRF(pl.LightningModule):
             "position": x}
 
         # Chunking
-        self.ray_chunk_size = kwargs.get("ray_chunk_size", 3500)
         self.pts_chunk_size = kwargs.get("pts_chunk_size", 1000)
 
         # Sampling
@@ -164,6 +163,8 @@ class OriginalNeRF(pl.LightningModule):
         
 
     def configure_optimizers(self):
+        # TODO: add learning rate scheduler to increase numerical stability with
+        # warmup followed by annealing
         optimizer = torch.optim.Adam(
             (list(self.models['coarse'].parameters()) + 
              list(self.models['fine'].parameters())),
@@ -181,7 +182,7 @@ class OriginalNeRF(pl.LightningModule):
         outputs = defaultdict(dict)
         
         for p in ["coarse", "fine"]:
-            if p is "coarse":
+            if p == "coarse":
                 pts, z_vals = sample_stratified(
                     rays_o, rays_d, self.near, self.far, 
                     self.stratified_sampling_sample_size, 
@@ -223,7 +224,7 @@ class OriginalNeRF(pl.LightningModule):
         self.log('train/mse-loss', loss.item(), 
                  prog_bar=True, on_step=True)
         
-        self.log('train/PNSR', pnsr, on_epoch=True)
+        self.log('train/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,
@@ -245,9 +246,9 @@ class OriginalNeRF(pl.LightningModule):
         pnsr = -10 * torch.log10(loss).item()
 
         self.log('val/mse-loss', loss.item(), 
-                 prog_bar=True, on_epoch=True)
+                 prog_bar=True, on_epoch=True, sync_dist=True)
         
-        self.log('val/PNSR', pnsr, on_epoch=True)
+        self.log('val/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,
@@ -268,15 +269,14 @@ class OriginalNeRF(pl.LightningModule):
         pnsr = -10 * torch.log10(loss).item()
 
         self.log('test/mse-loss', loss.item(), 
-                 prog_bar=False, on_epoch=True)
+                 prog_bar=False, on_epoch=True, sync_dist=True)
         
-        self.log('test/PNSR', pnsr, on_epoch=True)
+        self.log('test/PNSR', pnsr, on_epoch=True, sync_dist=True)
 
         return {
             "loss": loss,
             "rgb_pred": rgb_pred.reshape(rgb.shape), 
             "rgb_gt": rgb}
-
 
 
 def raw2outputs(raw: torch.Tensor, z_vals: torch.Tensor, rays_d: torch.Tensor,

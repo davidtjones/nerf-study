@@ -1,22 +1,18 @@
 # NeRF Study
 ---
-A brief re-implementation of several nerf papers.
+Brief but readable implementations to start exploring 3D representation learning techniques in the vein of NeRF. 
+
+This is a work in progress.
 
 ## Current implementations:
-* NeRF (in progress)
+* NeRF (in-progress)
+* Mip-NeRF (slated)
 
+## Sources
+### Papers
+1. [NeRF](https://arxiv.org/abs/2003.08934)
+2. [Mip-NeRF](https://arxiv.org/abs/2103.13415)
 
-## Reading list 
-1. [NeRF](https://www.matthewtancik.com/nerf)
-2. [Mip-NeRF](https://jonbarron.info/mipnerf/)
-3. [BlockNeRF](https://waymo.com/research/block-nerf/)
-4. [CityNerf](https://city-super.github.io/citynerf/)
-5. [MegaNeRF](https://meganerf.cmusatyalab.org/)
+### Datasets
+* NeRF: [dataset](https://drive.google.com/drive/folders/128yBriW1IG_3NJ5Rp7APSTZsJqdJdfc1)
 
-
-# Datasets
-## Synthetic
-* Reimplementing NeRF: [dataset](https://drive.google.com/drive/folders/128yBriW1IG_3NJ5Rp7APSTZsJqdJdfc1)
-* Google Earth Studio
-## Non synthetic 
-* [Wingtra](https://wingtra.com/mapping-drone-wingtraone/mapping-cameras/sony-rx1r-ii/)

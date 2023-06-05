@@ -6,29 +6,40 @@ from torchvision.transforms import Resize
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from util.callbacks import LogRenderedRGB
+from util.callbacks import LogRenders
 from util.data import NeRFDataModule
 
 
 data_path = "../data/nerf_synthetic/lego"
+devices = 1
+batch_size = 1  # needed
+ray_chunk_size = 50
 
-dm = NeRFDataModule(data_path, Resize(100, antialias=False))
 
-model = OriginalNeRF()
+dm = NeRFDataModule(
+    data_path,
+    batch_size,
+    ray_chunk_size,
+    Resize(100, antialias=False)
+)
+
+model = OriginalNeRF({"pts_chunk_size": 100})
 
 logger = WandbLogger(project="nerf-study", entity="djones", save_dir="logging")
 
 callbacks = [
-    LogRenderedRGB(50, {"val"}),
-    ModelCheckpoint(dirpath="logging", monitor='val/mse_loss')
+    LogRenders(100, 50, stages={"train", "val"}, log_every_n_images=100),
+    ModelCheckpoint(dirpath="logging", monitor='val/mse-loss')
 ]
 
 trainer = Trainer(
     accelerator='gpu',
     logger=logger,
-    max_epochs=1000,
+    max_epochs=65,
     callbacks=callbacks,
-    default_root_dir="logging"
+    default_root_dir="logging",
+    devices=devices,
+    strategy='ddp_find_unused_parameters_true' if devices > 1 else "auto"
 )
 
 trainer.fit(model, dm)

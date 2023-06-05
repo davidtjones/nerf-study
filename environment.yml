@@ -19,3 +19,4 @@ dependencies:
     - pydantic
     - pytorch_lightning
     - tqdm
+    - wandb
