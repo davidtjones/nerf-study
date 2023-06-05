@@ -13,13 +13,6 @@ from util.data import NeRFDataModule
 data_path = "../data/nerf_synthetic/lego"
 devices = 1
 batch_size = 1
-
-dm = NeRFDataModule(
-    data_path,
-    batch_size,
-    Resize(100, antialias=False)
-)
-batch_size = 1  # needed
 ray_chunk_size = 50
 img_height = 800
 resampled_height = None
