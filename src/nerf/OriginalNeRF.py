@@ -6,35 +6,9 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 
 from tqdm import tqdm
+import code
 
 from util.sampling import sample_stratified, sample_hierarchical
-
-
-class Chunker:
-    def __init__(self, batch_size, points_encoder, viewdirs_encoder):
-        self.batch_size = batch_size
-        self.points_encoder = points_encoder
-        self.viewdirs_encoder = viewdirs_encoder
-
-    def __call__(self, points, viewdirs):
-    
-        # There is only have 1 viewdir for each ray, but there are `sample_size`
-        # points for each ray. We can expand the viewdirs s.t. the viewdirs
-        # is repeated on a new axis for each point.
-
-        viewdirs = viewdirs[:, None, ...].expand(points.shape).reshape((-1, 3))
-        points = points.reshape((-1, 3))
-
-        # Encode:
-        points = self.points_encoder(points)
-        viewdirs = self.viewdirs_encoder(viewdirs)
-
-        # return a generator that returns the next batch
-        for i in range(0, len(points), self.batch_size):
-            pts_batch = points[i:i+self.batch_size]
-            viewdirs_batch = viewdirs[i:i+self.batch_size]
-            yield pts_batch, viewdirs_batch
-
 
 class PositionalEncoder(nn.Module):
     """
@@ -177,8 +151,6 @@ class OriginalNeRF(pl.LightningModule):
     def forward(self, rays):
         rays_o, rays_d = torch.split(rays, 3, dim=1)
 
-        C = Chunker(self.pts_chunk_size, self.pe, self.pe_viewdirs)
-
         outputs = defaultdict(dict)
         
         for p in ["coarse", "fine"]:
@@ -196,11 +168,10 @@ class OriginalNeRF(pl.LightningModule):
                 outputs[p]['sampling_hierarchical'] = z_hierarch
                 z_vals = z_vals_combined
             
-            chunks = tqdm(C(pts, rays_d), desc=f"\t{p} pass", **self.pbkw(2))
-            
-            preds = [self.models[p](chk[0], chk[1]) for chk in chunks]
+            rays_d_exp = rays_d[:, None, ...].expand(pts.shape).reshape((-1, 3))
+            pts_flat = pts.reshape((-1, 3))
 
-            raw = torch.cat(preds, dim=0)
+            raw = self.models[p](self.pe(pts_flat), self.pe_viewdirs(rays_d_exp))
             raw = raw.reshape(list(pts.shape[:2]) + [raw.shape[-1]])
 
             outputs[p]['outputs'] = dict(zip(self.output_keys[p], raw2outputs(raw, z_vals, rays_d)))

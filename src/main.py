@@ -14,21 +14,22 @@ data_path = "../data/nerf_synthetic/lego"
 devices = 1
 batch_size = 1  # needed
 ray_chunk_size = 50
-
+img_height = 800
+resampled_height = None
 
 dm = NeRFDataModule(
     data_path,
     batch_size,
     ray_chunk_size,
-    Resize(100, antialias=False)
+    # Resize(800, antialias=False)
 )
 
-model = OriginalNeRF({"pts_chunk_size": 100})
+model = OriginalNeRF(**{"pts_chunk_size": 3000})
 
 logger = WandbLogger(project="nerf-study", entity="djones", save_dir="logging")
 
 callbacks = [
-    LogRenders(100, 50, stages={"train", "val"}, log_every_n_images=100),
+    LogRenders(800, 50, stages={"train", "val"}, log_every_n_images=100),
     ModelCheckpoint(dirpath="logging", monitor='val/mse-loss')
 ]
 
